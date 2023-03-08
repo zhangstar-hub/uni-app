@@ -52,8 +52,10 @@
                     "path" : "goods_list/goods_list",
                     "style" :                                                                                    
                 {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
+                    "navigationBarTitleText": "商品列表",
+					"onReachBottomDistance": 150,
+                    "enablePullDownRefresh": true,
+					"backgroundColor": "#f8f8f8"
                 }
                 
                 }
