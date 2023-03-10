@@ -1,5 +1,6 @@
 import App from './App'
 import { $http }  from "@escook/request-miniprogram"
+import store from "@/store/store.js"
 
 // #ifndef VUE3
 import Vue from 'vue'
@@ -56,6 +57,7 @@ try {
 } catch (error) { }
 
 const app = new Vue({
+	store,
   ...App
 })
 app.$mount()
