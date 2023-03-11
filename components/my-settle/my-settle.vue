@@ -8,7 +8,7 @@
 				合计:<text class="amount">¥{{checkedGoodsAmount}}</text>
 			</view>
 			
-			<view class="btn-settle">
+			<view class="btn-settle" @click="settlement">
 				结算({{checkedCount}})
 			</view>
 		</view>
@@ -16,24 +16,70 @@
 </template>
 
 <script>
-	import {mapGetters, mapMutations} from 'vuex'
+	import {mapGetters, mapMutations, mapState} from 'vuex'
 	export default {
 		name:"my-settle",
 		data() {
 			return {
-				
+				seconds: 3,
+				timer: null,
 			};
 		},
 		computed: {
 			...mapGetters('m_cart', ['checkedCount', 'total', 'checkedGoodsAmount']),
+			...mapGetters('m_user', ['addstr']),
+			...mapState('m_user', ['token']),
+			
 			isFullCheck(){
 				return this.total == this.checkedCount
 			}
 		},
 		methods: {
 			...mapMutations('m_cart', ['updateAllGoodsState']),
+			...mapMutations('m_user', ['updateRediectInfo']),
 			changeAllState(){
 				this.updateAllGoodsState(!this.isFullCheck)
+			},
+			settlement(){
+				if(!this.checkedCount){
+					return uni.$showMsg('请选择要结算的商品!')
+				}
+				if(!this.addstr){
+					return uni.$showMsg("请选择收获地址!")
+				}
+				if(!this.token){
+					this.delayNavigate()
+				}
+				
+			},
+			delayNavigate(){
+				this.showTips(this.seconds)
+				this.timer = setInterval(()=> {
+					this.seconds--
+					if(this.seconds <= 0) {
+						clearInterval(this.timer)
+						uni.switchTab({
+							url:'/pages/my/my',
+							success: ()=>{
+								this.updateRediectInfo({
+									open_type: 'switchTab',
+									from: '/pages/cart/cart'
+								})
+							}
+						})
+						this.seconds = 3;
+						return
+					}
+					this.showTips(this.seconds);
+				}, 1000)
+			},
+			showTips(n){
+				uni.showToast({
+					icon:'none',
+					title: '请登录后结算, ' + n +'秒后挑战到登录页面',
+					mask: true,
+					duration: 1500
+				})
 			}
 		}
 	}
